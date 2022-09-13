@@ -9,7 +9,7 @@ def index():
 @app.route('/display/<int:id>')
 def dashboard(id):
   print(f'!!!!!!!!!!!!!!!!! User.get_patient_by_id(id)')
-  return render_template('display.html', patient=User.get_patient_by_id(id), cid=User.patient_ipfs_file_upload())
+  return render_template('display.html', patient=User.get_patient_by_id(id), cid=User.patient_ipfs_file_upload(id))
 
 @app.route('/user/login', methods=['POST'])
 def create_user_withcid():

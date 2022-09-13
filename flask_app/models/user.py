@@ -1,4 +1,5 @@
 
+from cgitb import text
 from flask_app.config.mysqlconnection import connectToMySQL
 import json, ipfshttpclient, os
 from flask import session, request
@@ -12,6 +13,7 @@ class User:
     self.patient_number = data['PatNum']
     self.last_name = data['LName']
     self.first_name = data['FName']
+    self.patient_uploaded_content = []
 
   @classmethod
   def get_patient_by_id(cls,id):
@@ -27,24 +29,28 @@ class User:
       return False
     return results[0]
 
-  # this method should return the name of the file.
   @classmethod
-  def patient_create_file(cls):
-    print(f"??????????????????????? {cls.patient_ipfs_data_path}")
-    filepath = os.path.join(f'{cls.patient_ipfs_data_path}', f'filename.txt')
-    # if not os.path.exists(f'{cls.patient_ipfs_data_path}'):
-    #   os.makedirs(f'{cls.patient_ipfs_data_path}')
-    f = open(filepath, "a")
-    return f
+  def patient_create_file(cls,id):
+    patient_file_name = f"{User.get_patient_by_id(id)['PatNum']}{User.get_patient_by_id(id)['LName']}"
+
+    text_file = open(f"{cls.patient_ipfs_data_path}/{patient_file_name}.txt", "w")
+    if text_file == False:
+      print("patient already has a file created")
+      return patient_file_name
+    
+    text_file.write(f"{User.get_patient_by_id(id)}")
+    text_file.close()
+
+    return patient_file_name
 
   @classmethod
-  def patient_ipfs_file_upload(cls):
-    res = client.add(f'{cls.patient_ipfs_data_path}/{User.patient_create_file()}')
-    print(res)
-    cidOfPatient = res.address
-
-    # this gets the values inside of the file uploaded to ipfs
-    # QmZJsQUWUes6vz6DzDT3z6383k1Y4hFYUKun9UkPN1PYSX
+  def patient_ipfs_file_upload(cls,id):
+    res = client.add(f'{cls.patient_ipfs_data_path}/{User.patient_create_file(id)}.txt')
+    # results from uploading the content to ipfs-http-client
+    print(f"############################### {res}")
+    cidOfPatient = res['Hash']
     getContentFromCID = client.cat(f'{cidOfPatient}').decode('utf-8')
-    print(getContentFromCID)
+    cls.patient_uploaded_content = getContentFromCID
+    # retrieving our uploaded patient data from ipfs
+    print(getContentFromCID['PatNum'])
     return res
