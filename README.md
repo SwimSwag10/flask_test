@@ -1,7 +1,7 @@
 # Python Patient IPFS uploader
 
 ### Requirements:
-"""
+""" python
 [packages]
 flask = "*"
 pymysql = "*"
@@ -10,7 +10,6 @@ flask-bcrypt = "*"
 requests = "*"
 flask-dotenv = "*"
 ipfshttpclient = "==0.8.0a1"
-
 [requires]
 python_version = "3.10"
 """
