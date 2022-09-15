@@ -31,7 +31,9 @@ class User:
 
   @classmethod
   def patient_create_file(cls,id):
-    patient_file_name = f"{User.get_patient_by_id(id)['PatNum']}{User.get_patient_by_id(id)['LName']}"
+    patient_file_name = f"{User.get_patient_by_id(id)['PatNum']}{User.get_patient_by_id(id)['LName'].lower()}"
+
+    # -- encryption should happen right here before the file is created with the information inside of it --
 
     text_file = open(f"{cls.patient_ipfs_data_path}/{patient_file_name}.txt", "w")
     if text_file == False:
